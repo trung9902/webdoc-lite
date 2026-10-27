@@ -1,0 +1,29 @@
+server:
+  port: 8098
+
+spring:
+  application:
+    name: webdoc-lite
+  datasource:
+    # Mặc định dùng H2 dạng tệp: không cần cài cơ sở dữ liệu. Muốn dùng PostgreSQL thì đặt WEBDOC_DB_URL.
+    url: ${WEBDOC_DB_URL:jdbc:h2:file:./data/webdoc-lite;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH}
+    username: ${WEBDOC_DB_USER:sa}
+    password: ${WEBDOC_DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+  jackson:
+    default-property-inclusion: non_null
+
+webdoc:
+  jwt:
+    # Chỉ dùng để phát triển. Khi triển khai thật phải đặt WEBDOC_JWT_SECRET (từ 32 ký tự).
+    secret: ${WEBDOC_JWT_SECRET:dev-only-secret-change-me-0123456789abcdef0123456789}
+    access-minutes: ${WEBDOC_JWT_ACCESS_MINUTES:60}
+    refresh-days: ${WEBDOC_JWT_REFRESH_DAYS:7}
+  cors-origins: ${WEBDOC_CORS_ORIGINS:http://localhost:5173,http://localhost:5174}
+  # true: nạp tổ chức, 5 tài khoản demo và tài liệu mẫu khi cơ sở dữ liệu còn trống.
+  seed-demo: ${WEBDOC_SEED_DEMO:true}
+  demo-password: ${WEBDOC_DEMO_PASSWORD:Demo@123}
+  bootstrap-admin-password: ${WEBDOC_ADMIN_PASSWORD:Admin@123}

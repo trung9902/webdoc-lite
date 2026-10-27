@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Be Vietnam Pro', 'Noto Sans', -apple-system, 'Segoe UI', sans-serif;
+}
+
+/* Sidebar: chữ và biểu tượng theo màu của giao diện đang chọn */
+.app-sidebar .ant-menu-item,
+.app-sidebar .ant-menu-submenu-title,
+.app-sidebar .ant-menu-title-content,
+.app-sidebar .ant-menu-submenu-arrow,
+.app-sidebar .ant-menu-item .anticon,
+.app-sidebar .phosphor-icon {
+  color: var(--sidebar-text) !important;
+}
+
+.app-sidebar .ant-menu-item-selected,
+.app-sidebar .ant-menu-submenu-selected > .ant-menu-submenu-title {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.app-sidebar .ant-layout-sider-trigger,
+.app-sidebar .ant-layout-sider-trigger * {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--sidebar-text) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.app-sidebar .ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Thanh cuộn mảnh của sidebar */
+.ant-layout-sider::-webkit-scrollbar { width: 2px; }
+.ant-layout-sider::-webkit-scrollbar-track { background: transparent; }
+.ant-layout-sider::-webkit-scrollbar-thumb { background-color: #a3a3a3; border-radius: 4px; }
+.ant-layout-sider::-webkit-scrollbar-thumb:hover { background-color: #737373; }
