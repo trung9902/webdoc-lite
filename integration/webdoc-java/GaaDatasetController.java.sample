@@ -1,0 +1,20 @@
+// MẪU Spring Boot (chưa biên dịch trong môi trường dựng tài liệu) – API dữ liệu WebDoc cho GAA gọi ngược.
+// Hợp đồng giống mock_webdoc.py: GET /api/v1/gaa/datasets/{dataset}?profile=...  ->  {"dataset","columns","rows"}
+@RestController
+@RequestMapping("/api/v1/gaa/datasets")
+@RequiredArgsConstructor
+public class GaaDatasetController {
+    private final GaaTokenVerifier verifier;          // kiểm tra HS256 bằng gaa.jwt-secret (giống gaa/auth.py)
+    private final GaaDatasetService service;           // truy vấn PostGIS bằng role theo người dùng (RLS phường)
+
+    @GetMapping("/{dataset}")
+    public ResponseEntity<GaaDataset> get(@PathVariable String dataset, @RequestParam String profile,
+                                          @RequestHeader("Authorization") String auth) {
+        GaaClaims c = verifier.verify(auth.replaceFirst("^Bearer ", ""));      // 401 nếu sai/hết hạn
+        if (!service.allowed(c, profile, dataset)) return ResponseEntity.status(403).build();
+        // WebDoc tự áp: lọc phường (c.areas), ẩn bản ghi chưa duyệt nếu thiếu view_proposed,
+        // bỏ cột hạn chế (x_vn2000, y_vn2000, lat, lon) nếu chưa được cấp han_che + MFA.
+        return ResponseEntity.ok(service.load(c, profile, dataset));
+    }
+}
+public record GaaDataset(String dataset, List<String> columns, List<List<Object>> rows) {}
