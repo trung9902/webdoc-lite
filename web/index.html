@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GAA cho WebDoc</title>
+<style>
+:root{--bg:#F4F6F7;--card:#FFFFFF;--ink:#10212B;--muted:#4A5B66;--line:#DCE3E7;--accent:#0A6C86;--accent-soft:#E3F1F5;
+--ok:#1F6B3A;--ok-bg:#E6F3EA;--warn:#8A4200;--warn-bg:#FDF1E4;--bad:#8E1717;--bad-bg:#FBEAEA;--side:#0E2530}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14.5px/1.55 "DejaVu Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.app{display:flex;flex-wrap:wrap;min-height:100vh}
+aside{flex:0 1 300px;max-width:100%;background:var(--side);color:#D7E3E8;padding:20px 18px;display:flex;flex-direction:column;gap:14px}
+aside h1{font-size:16.5px;margin:0;color:#fff}
+aside small{color:#9FB6BF}
+aside label{font-size:12px;font-weight:700;color:#9FB6BF;display:block}
+aside select,aside input{width:100%;min-height:40px;margin-top:6px;border-radius:8px;border:1px solid #2A5566;background:#163845;color:#fff;padding:0 10px;font:inherit}
+.kv{font-size:12.5px;display:grid;grid-template-columns:auto 1fr;gap:4px 10px}
+.kv span:nth-child(odd){color:#9FB6BF}
+.nav{display:flex;gap:6px}
+.nav button{flex:1;min-height:38px;border-radius:8px;border:1px solid #2A5566;background:transparent;color:#C9D7DD;font:700 13px inherit;cursor:pointer}
+.nav button.on{background:#1C4B5C;color:#fff;border-color:#1C4B5C}
+main{flex:1 1 600px;min-width:0;display:flex;flex-direction:column;padding:20px 26px;gap:14px}
+.top{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;border:1px solid #C5D0D6;border-radius:999px;padding:3px 11px;font-size:12.5px;background:#fff}
+.chip.prof{border-color:var(--accent);background:var(--accent-soft);color:#0A5266;font-weight:700}
+#log{flex:1;display:flex;flex-direction:column;gap:14px;overflow:auto}
+.q{align-self:flex-end;max-width:80%;background:var(--side);color:#fff;border-radius:14px 14px 4px 14px;padding:10px 14px}
+.a{align-self:flex-start;width:100%;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.who{font-size:12px;color:var(--muted);margin-bottom:4px}
+.ans{font-size:15px}
+.notes{margin:8px 0 0;padding-left:18px;font-size:12.5px;color:var(--muted)}
+.plan{margin-top:10px;border:1px dashed #9FB6BF;border-radius:10px;padding:8px 12px;font-size:12.5px;background:#FAFCFC}
+.plan b{color:#0A5266}
+.tag{display:inline-block;border-radius:6px;background:var(--accent-soft);color:#0A5266;padding:0 6px;margin:2px 4px 2px 0;font-family:"DejaVu Sans Mono",monospace;font-size:12px}
+details{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--accent);min-height:26px}
+.trace{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:12.5px}
+.trace li{display:grid;grid-template-columns:76px 70px minmax(0,1fr);gap:8px;align-items:start}
+.trace li>div{min-width:0}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:700;text-align:center}
+.st-ok{background:var(--ok-bg);color:var(--ok)}.st-denied,.st-blocked,.st-error{background:var(--bad-bg);color:var(--bad)}.st-retry,.st-warn{background:var(--warn-bg);color:var(--warn)}
+pre{background:#0E2530;color:#D7E3E8;border-radius:8px;padding:10px;overflow:auto;font:12px/1.5 "DejaVu Sans Mono",monospace;white-space:pre;margin:6px 0 0}
+.tbl{overflow:auto;max-height:340px;margin-top:10px;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;font-size:13px;width:100%}
+th,td{padding:6px 10px;border-bottom:1px solid #EDF1F3;text-align:left;white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+th{background:#F8FAFB;color:var(--muted);font-size:12px;position:sticky;top:0}
+tr.tot td{font-weight:700;background:#F8FAFB}
+img.chart{max-width:100%;margin-top:10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{min-height:34px;border-radius:999px;border:1px solid #C5D0D6;background:#fff;padding:0 12px;font:inherit;font-size:12.5px;cursor:pointer}
+form{display:flex;gap:10px;background:#fff;border:1px solid #C5D0D6;border-radius:12px;padding:8px}
+form input{flex:1;border:0;outline:none;font:inherit;padding:0 8px;min-height:42px;min-width:0}
+form button{min-height:42px;padding:0 18px;border-radius:8px;border:0;background:var(--accent);color:#fff;font:700 14px inherit;cursor:pointer}
+form button:disabled{opacity:.6}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.card h2{font-size:15px;margin:0 0 8px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div><h1>GAA · Trợ lý phân tích</h1><small id="domtitle">Multi-agent cho WebDoc/Genadata</small></div>
+    <div class="nav"><button id="tab-chat" class="on" type="button">Trợ lý</button><button id="tab-cfg" type="button">Cấu hình</button></div>
+    <div id="userbox"><label for="user">Đăng nhập với tư cách (người dùng mẫu)</label><select id="user"></select></div>
+    <div class="kv" id="meta"></div>
+    <div id="token-box" hidden><label for="token">Token truy cập</label>
+      <input id="token" type="password"></div>
+    <small>Người dùng mẫu chỉ để minh họa RBAC/ABAC. Khi chạy cùng WebDoc, danh tính lấy từ JWT do WebDoc ký (/api/v1/ask).</small>
+  </aside>
+  <main>
+    <section id="chat" style="display:flex;flex-direction:column;gap:14px;flex:1">
+      <div class="top" id="topbar"></div>
+      <div id="log" aria-live="polite"></div>
+      <div class="chips" id="chips"></div>
+      <form id="f"><label for="qi" style="position:absolute;left:-9999px">Câu hỏi</label>
+        <input id="qi" placeholder="Hỏi về số liệu hoặc hồ sơ…" autocomplete="off">
+        <button id="send" type="submit">Gửi</button></form>
+    </section>
+    <section id="cfg" hidden style="display:flex;flex-direction:column;gap:14px"></section>
+  </main>
+</div>
+<script>
+const $ = s => document.querySelector(s);
+let META = null;
+function el(tag, attrs = {}, text) { const e = document.createElement(tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+const fmt = (v, dec) => { if (typeof v !== "number") return v == null ? "" : String(v);
+  const [i, f] = v.toFixed(dec || 0).split("."); return i.replace(/\B(?=(\d{3})+(?!\d))/g, " ") + (f ? "," + f : ""); };
+async function init() {
+  META = await (await fetch("/api/meta")).json();
+  $("#domtitle").textContent = "Hồ sơ nghiệp vụ: " + META.domain_title;
+  for (const u of META.users) $("#user").append(el("option", {value: u.id}, `${u.id} · ${u.biz_role}${u.areas.length ? " (" + u.areas.join(", ") + ")" : ""}`));
+  if (!META.users.length) $("#userbox").hidden = true;
+  const kv = [["Môi trường", META.profile === "local" ? "Web nội bộ (LAN)" : "Internet"], ["Hồ sơ", META.domain], ["Mô hình AI", META.llm_provider],
+              ["Agent lập trình", META.models.coder], ["Dữ liệu hạn chế", META.allow_restricted_data ? "cho phép khi đủ điều kiện" : "chặn"], ["Sandbox", META.sandbox]];
+  for (const [k, v] of kv) { $("#meta").append(el("span", {}, k)); $("#meta").append(el("span", {}, v)); }
+  if (META.token_required) $("#token-box").hidden = false;
+  for (const s of META.examples) { const b = el("button", {type: "button"}, s); b.onclick = () => { $("#qi").value = s; $("#qi").focus(); }; $("#chips").append(b); }
+  const tb = $("#topbar"); tb.append(el("span", {class: "chip prof"}, "Hồ sơ: " + META.domain_title)); tb.append(el("span", {class: "chip"}, "Profile: " + META.profile)); tb.append(el("span", {class: "chip"}, "LLM: " + META.llm_provider));
+}
+function table(r) {
+  const w = el("div", {class: "tbl"}), t = el("table"), h = el("tr");
+  const num = r.columns.map((c, i) => r.rows.length && r.rows.every(x => typeof x[i] === "number"));
+  const dec = r.columns.map((c, i) => num[i] ? Math.min(2, Math.max(0, ...r.rows.map(x => { const s = String(x[i]); return s.includes(".") ? s.split(".")[1].length : 0; }))) : 0);
+  r.columns.forEach((c, i) => h.append(el("th", num[i] ? {class: "n"} : {}, c))); t.append(h);
+  r.rows.slice(0, 300).forEach(row => { const tr = el("tr"); row.forEach((v, i) => tr.append(el("td", num[i] ? {class: "n"} : {}, fmt(v, dec[i])))); t.append(tr); });
+  if (r.rows.length > 1 && num.some(Boolean) && r.columns.some(c => /Tổng|Số |Diện tích/.test(c))) {
+    const tr = el("tr", {class: "tot"}); r.columns.forEach((c, i) => tr.append(el("td", num[i] ? {class: "n"} : {}, i === 0 ? "Tổng" : (num[i] && !/Sâu|lâu|Điểm|Trang/.test(c) ? fmt(Math.round(r.rows.reduce((a, x) => a + x[i], 0) * 10) / 10, dec[i]) : "")))); t.append(tr);
+  }
+  w.append(t); return w;
+}
+function plan(p) {
+  const d = el("div", {class: "plan"}); d.append(el("b", {}, "Kế hoạch của Planner: ")); d.append(document.createTextNode(p.reason || ""));
+  (p.queries || []).forEach(q => { const line = el("div"); line.append(el("span", {class: "tag"}, "tập: " + q.dataset));
+    (q.columns || []).forEach(c => line.append(el("span", {class: "tag"}, c)));
+    (q.filters || []).forEach(f => line.append(el("span", {class: "tag"}, `${f.col} ${f.op} ${Array.isArray(f.value) ? f.value.join("|") : f.value}`))); d.append(line); });
+  return d;
+}
+function render(r, who) {
+  const a = el("div", {class: "a"});
+  a.append(el("div", {class: "who"}, `${who} · ý định: ${r.intent || "—"}`));
+  a.append(el("div", {class: "ans"}, r.answer || r.error || ""));
+  if (r.plan && r.plan.queries && r.plan.queries.length) a.append(plan(r.plan));
+  if (r.result_kind === "table" && r.result) a.append(table(r.result));
+  else if (r.result_kind === "value" && r.result != null) a.append(el("pre", {}, typeof r.result === "string" ? r.result : JSON.stringify(r.result, null, 2)));
+  (r.charts || []).forEach(c => a.append(el("img", {class: "chart", alt: "Biểu đồ kết quả", src: "data:image/png;base64," + c})));
+  if (r.policy_notes && r.policy_notes.length) { const ul = el("ul", {class: "notes"}); r.policy_notes.forEach(n => ul.append(el("li", {}, n))); a.append(ul); }
+  if (r.trace) {
+    const d = el("details"); d.append(el("summary", {}, `Các bước của agent (${r.trace.length})`));
+    const ul = el("ul", {class: "trace"});
+    r.trace.forEach(t => { const li = el("li"); li.append(el("strong", {}, t.agent)); li.append(el("span", {class: "pill st-" + t.status}, t.status));
+      const body = el("div", {}, `${t.title}${t.ms ? " · " + t.ms + " ms" : ""}${t.model ? " · " + t.model : ""}`);
+      const extra = Object.assign({}, t.detail); const code = extra.code; delete extra.code; delete extra.model;
+      if (Object.keys(extra).length) body.append(el("pre", {}, JSON.stringify(extra, null, 1)));
+      if (code) body.append(el("pre", {}, code));
+      li.append(body); ul.append(li); });
+    d.append(ul); a.append(d);
+  }
+  return a;
+}
+$("#f").onsubmit = async ev => {
+  ev.preventDefault();
+  const q = $("#qi").value.trim(); if (!q) return;
+  const sel = $("#user"); const who = sel.value;
+  $("#log").append(el("div", {class: "q"}, q)); $("#qi").value = ""; $("#send").disabled = true;
+  const wait = el("div", {class: "a"}, "Các agent đang làm việc…"); $("#log").append(wait); wait.scrollIntoView();
+  try {
+    const headers = {"Content-Type": "application/json"}; const tk = $("#token").value; if (tk) headers.Authorization = "Bearer " + tk;
+    const r = await (await fetch("/api/ask", {method: "POST", headers, body: JSON.stringify({user_id: who, question: q})})).json();
+    wait.replaceWith(render(r, who));
+  } catch (e) { wait.textContent = "Lỗi: " + e; }
+  $("#send").disabled = false; $("#log").lastChild.scrollIntoView();
+};
+function kvTable(title, rows, head) {
+  const c = el("div", {class: "card"}); c.append(el("h2", {}, title)); const t = el("table");
+  if (head) { const h = el("tr"); head.forEach(x => h.append(el("th", {}, x))); t.append(h); }
+  rows.forEach(r => { const tr = el("tr"); r.forEach(v => tr.append(el("td", {}, v == null ? "—" : String(v)))); t.append(tr); });
+  c.append(t); return c;
+}
+async function showCfg() {
+  const c = await (await fetch("/api/config")).json(); const s = $("#cfg"); s.innerHTML = "";
+  s.append(el("div", {class: "top"}, "")); s.firstChild.append(el("span", {class: "chip prof"}, "Cấu hình đang chạy (chỉ đọc) · " + c.domain_title));
+  const g = el("div", {class: "grid2"});
+  g.append(kvTable("Môi trường và mô hình", [["Profile triển khai", c.profile + " (" + c.channel + ")"], ["Hồ sơ nghiệp vụ", c.domain], ["Nguồn dữ liệu", c.backend],
+    ["Nhà cung cấp LLM", c.llm_provider], ["Địa chỉ LLM", c.llm_base_url], ...Object.entries(c.models).map(([a, m]) => ["Mô hình · " + a, m]),
+    ["JWT WebDoc", c.jwt ? "đã đặt GAA_JWT_SECRET" : "chưa đặt (chỉ chế độ demo)"], ["Người dùng mẫu", c.demo_users ? "bật" : "tắt"]]));
+  g.append(kvTable("Giới hạn và bảo vệ", [["Số lần sửa mã tối đa", c.limits.max_code_retries], ["Sandbox", c.limits.sandbox_backend],
+    ["Thời gian sandbox (s)", c.limits.sandbox_timeout_s], ["Bộ nhớ sandbox (MB)", c.limits.sandbox_mem_mb], ["Dòng mẫu gửi LLM", c.limits.sample_rows_to_llm],
+    ["Giới hạn câu hỏi/phút", c.limits.rate_limit_per_min], ["Dữ liệu hạn chế", c.allow_restricted_data ? "cho phép khi đủ điều kiện" : "chặn"],
+    ["Bắt buộc MFA với dữ liệu hạn chế", c.require_mfa_for_restricted ? "có" : "không"]]));
+  s.append(g);
+  s.append(kvTable("Danh mục dữ liệu của hồ sơ", c.datasets.map(d => [d.dataset, d.title, d.rows, d.restricted.join(", ") || "—", d.status_col || "—", d.search_only ? "chỉ tìm kiếm" : "phân tích"]),
+    ["Tập dữ liệu", "Tên", "Số dòng", "Cột hạn chế", "Cột trạng thái", "Dùng cho"]));
+  if (c.roles.length) s.append(kvTable("Ánh xạ vai trò nghiệp vụ → Genadata", c.roles.map(r => [r.biz_role, r.label, r.genadata_role, (r.extra || []).join(", ") || "—", (r.clearances || []).join(", ") || "—"]),
+    ["Vai trò", "Tên", "Vai trò Genadata", "Quyền thêm", "Được cấp"]));
+}
+$("#tab-chat").onclick = () => { $("#chat").hidden = false; $("#cfg").hidden = true; $("#tab-chat").classList.add("on"); $("#tab-cfg").classList.remove("on"); };
+$("#tab-cfg").onclick = () => { $("#chat").hidden = true; $("#cfg").hidden = false; $("#tab-cfg").classList.add("on"); $("#tab-chat").classList.remove("on"); showCfg(); };
+init();
+</script>
+</body>
+</html>

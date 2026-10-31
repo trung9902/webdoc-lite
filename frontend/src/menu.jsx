@@ -1,5 +1,6 @@
-import { BuildingOffice, Folders, House, UserGear } from '@phosphor-icons/react';
+import { BuildingOffice, Folders, House, Robot, UserGear } from '@phosphor-icons/react';
 
+import AgentPage from './pages/AgentPage';
 import DocumentsPage from './pages/DocumentsPage';
 import HomePage from './pages/HomePage';
 import OrganizationPage from './pages/OrganizationPage';
@@ -42,4 +43,6 @@ export const pages = [
   { path: '/organization', to: '/organization?tab=users', label: 'Thành viên', group: 'org', menuOnly: true, visible: hasOrg },
 
   { path: '/documents', label: 'Quản lý tài liệu', icon: <Folders size={20} />, element: <DocumentsPage />, visible: () => true },
+
+  { path: '/agent', label: 'Hỏi đáp Agent', icon: <Robot size={20} />, element: <AgentPage />, visible: () => true },
 ];

@@ -1,0 +1,4 @@
+backend/
+frontend/
+docs/
+**/__pycache__/
